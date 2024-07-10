@@ -50,14 +50,12 @@ type InfoMessage struct {
 
 // TrainingInfo возвращает структуру InfoMessage, в которой хранится вся информация о проведенной тренировке.
 func (t Training) TrainingInfo() InfoMessage {
-	message := InfoMessage{}
-	message.TrainingType = t.TrainingType
-	message.Duration = t.Duration
-	message.Distance = t.distance()
-	message.Speed = t.meanSpeed()
-	message.Calories = t.Calories()
-
-	return message
+	return InfoMessage{
+		TrainingType: t.TrainingType,
+		Duration:     t.Duration,
+		Distance:     t.distance(),
+		Speed:        t.meanSpeed(),
+		Calories:     t.Calories()}
 }
 
 // String возвращает строку с информацией о проведенной тренировке.
@@ -106,14 +104,7 @@ func (r Running) Calories() float64 {
 // TrainingInfo возвращает структуру InfoMessage с информацией о проведенной тренировке.
 // Это переопределенный метод TrainingInfo() из Training.
 func (r Running) TrainingInfo() InfoMessage {
-	message := InfoMessage{}
-	message.TrainingType = r.TrainingType
-	message.Duration = r.Duration
-	message.Distance = r.distance()
-	message.Speed = r.meanSpeed()
-	message.Calories = r.Calories()
-
-	return message
+	return r.Training.TrainingInfo()
 }
 
 // Константы для расчета потраченных килокалорий при ходьбе.
@@ -135,7 +126,7 @@ type Walking struct {
 // * 0.029 * вес_спортсмена_в_кг) * время_тренировки_в_часах * мин_в_ч)
 // Это переопределенный метод Calories() из Training.
 func (w Walking) Calories() float64 {
-	shiftedWeight := CaloriesWeightMultiplier*w.Weight + math.Pow(w.meanSpeed()*KmHInMsec, 2)/(w.Height*CmInM)
+	shiftedWeight := CaloriesWeightMultiplier*w.Weight + math.Pow(w.meanSpeed()*KmHInMsec, 2)/(w.Height/CmInM)
 	multiWeight := CaloriesSpeedHeightMultiplier * w.Weight
 	multiDuration := w.Duration.Hours() * MinInHours
 
@@ -145,14 +136,7 @@ func (w Walking) Calories() float64 {
 // TrainingInfo возвращает структуру InfoMessage с информацией о проведенной тренировке.
 // Это переопределенный метод TrainingInfo() из Training.
 func (w Walking) TrainingInfo() InfoMessage {
-	message := InfoMessage{}
-	message.TrainingType = w.TrainingType
-	message.Duration = w.Duration
-	message.Distance = w.distance()
-	message.Speed = w.meanSpeed()
-	message.Calories = w.Calories()
-
-	return message
+	return w.Training.TrainingInfo()
 }
 
 // Константы для расчета потраченных килокалорий при плавании.
